@@ -14,5 +14,5 @@ services:
     healthcheck:
       test: mysql -pabc123 -D testdb -e "SELECT * FROM test1;"
       interval: 3s
-      timeout: 30s
+      timeout: 60s
       retries: 10
