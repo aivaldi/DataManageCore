@@ -12,7 +12,7 @@
     </organization>
 
     <properties>
-        <mysql-test-script-directory>${project.basedir}/src/test/resources/docker/mysql</mysql-test-script-directory>
+        <mysql-test-script-directory>${project.basedir}/src/tests/resources/docker/mysql</mysql-test-script-directory>
     </properties>
 
     <build>
@@ -45,7 +45,7 @@
                 </executions>
             </plugin>
             <!-- configure docker for integration test-->
-            <plugin>
+            <!-- plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.35.0</version>
@@ -87,9 +87,6 @@
                     </images>
                 </configuration>
 
-                <!-- Connect start/stop to pre- and
-                     post-integration-test phase, respectively if you want to start
-                     your docker containers during integration tests -->
                 <executions>
                     <execution>
                         <id>start</id>
@@ -105,6 +102,32 @@
                         <goals>
                             <goal>stop</goal>
                             <goal>remove</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin -->
+
+            <plugin>
+                <groupId>io.brachu</groupId>
+                <artifactId>docker-compose-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <configuration>
+                    <projectName>DMC</projectName>
+                    <file>docker-compose.yml</file>
+
+                    <wait>
+                        <value>30</value>
+                        <unit>SECONDS</unit>
+                    </wait>
+                    <services>
+                        <service>mysql</service>
+                    </services>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>up</goal>
+                            <goal>down</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -192,7 +215,7 @@
         </plugins>
 
         <sourceDirectory>${project.basedir}/src/main/</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/</testSourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/tests/</testSourceDirectory>
 
 
 
