@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ar.com.ivalsoft</groupId>
+    <artifactId>etl_core</artifactId>
+    <packaging>jar</packaging>
+    <description>ETLCore</description>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ETLCore</name>
+    <organization>
+        <name>ar.com.ivalsoft</name>
+    </organization>
+
+    <properties>
+        <mysql-test-script-directory>${project.basedir}/src/test/resources/docker/mysql</mysql-test-script-directory>
+    </properties>
+
+    <build>
+
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <skipMain>true</skipMain> <!-- skip compile -->
+                    <skip>true</skip> <!-- skip testCompile -->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.sbt-compiler-maven-plugin</groupId>
+                <artifactId>sbt-compiler-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>default-sbt-compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- configure docker for integration test-->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.35.0</version>
+
+                <configuration>
+                    <images>
+                        <image>
+                            <alias>database</alias>
+                            <name>mysql:latest</name>
+                            <run>
+                                <volumes>
+                                    <bind>
+                                        <volume>${mysql-test-script-directory}:/docker-entrypoint-initdb.d</volume>
+                                    </bind>
+                                </volumes>
+
+                                <wait>
+                                    <log>mysqld: ready for connections</log>
+                                    <time>20000</time>
+                                </wait>
+                                <env>
+                                    <MYSQL_ROOT_PASSWORD>abc123</MYSQL_ROOT_PASSWORD>
+                                    <MYSQL_DATABASE>testdb</MYSQL_DATABASE>
+                                    <MYSQL_USER>mysql</MYSQL_USER>
+                                    <MYSQL_PASSWORD>mysql</MYSQL_PASSWORD>
+                                </env>
+                                <ports>
+                                    <port>3306:3306</port>
+                                </ports>
+
+
+                                <log>
+                                    <prefix>TC</prefix>
+                                    <date>default</date>
+                                    <color>cyan</color>
+                                </log>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+
+                <!-- Connect start/stop to pre- and
+                     post-integration-test phase, respectively if you want to start
+                     your docker containers during integration tests -->
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                            <goal>remove</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.20.1</version>
+                <executions>
+                    <execution>
+                        <id>integration-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>false</skipTests>
+                            <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
+                            <includes>
+                                <include>**/*Suite.class</include>
+                                <include>**/*Test.class</include>
+                                <include>**/*Tests.class</include>
+                                <include>**/*Spec.class</include>
+                                <include>**/*Specs.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.3</version>
+                <executions>
+                    <execution>
+                        <id>coverage-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>coverage-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <!-- Threshold -->
+                    <execution>
+                        <id>coverage-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>CLASS</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>80%</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+        </plugins>
+
+        <sourceDirectory>${project.basedir}/src/main/</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/</testSourceDirectory>
+
+
+
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.12.8</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.12</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.12</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb.spark</groupId>
+            <artifactId>mongo-spark-connector_2.12</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.perbeatus</groupId>
+            <artifactId>spark-google-spreadsheets_2.12</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.crealytics</groupId>
+            <artifactId>spark-excel_2.12</artifactId>
+            <version>0.13.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-analytics</artifactId>
+            <version>v3-rev142-1.22.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-core_2.12</artifactId>
+            <version>4.11.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-junit -->
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-junit_2.12</artifactId>
+            <version>4.11.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.10</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-core_2.12</artifactId>
+            <version>4.11.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scalactic</groupId>
+            <artifactId>scalactic_2.12</artifactId>
+            <version>3.2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.12</artifactId>
+            <version>3.2.7</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>scalazbintray</id>
+            <name>scalaz-bintray</name>
+            <url>http://dl.bintray.com/scalaz/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+</project>
