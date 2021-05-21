@@ -13,6 +13,8 @@
 
     <properties>
         <mysql-test-script-directory>${project.basedir}/src/tests/resources/docker/mysql</mysql-test-script-directory>
+        <ignore-integration-test>${env.IGNORE-IT}</ignore-integration-test>
+        <ignore-test>${env.IGNORE-TEST}</ignore-test>
     </properties>
 
     <build>
@@ -114,7 +116,6 @@
                 <configuration>
                     <projectName>DMC</projectName>
                     <file>docker-compose.yml</file>
-
                     <wait>
                         <value>30</value>
                         <unit>SECONDS</unit>
@@ -139,7 +140,7 @@
                 <version>2.20</version>
                 <configuration>
                     <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
-                    <skipTests>true</skipTests>
+                    <skipTests>${ignore-test}</skipTests>
                 </configuration>
             </plugin>
 
@@ -155,7 +156,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <skipTests>false</skipTests>
+                            <skipTests>${ignore-integration-test}</skipTests>
                             <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
                             <includes>
                                 <include>**/*Suite.class</include>
@@ -193,7 +194,7 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                        <configuration>
+                        <!--configuration>
                             <rules>
                                 <rule>
                                     <element>CLASS</element>
@@ -206,7 +207,7 @@
                                     </limits>
                                 </rule>
                             </rules>
-                        </configuration>
+                        </configuration-->
                     </execution>
                 </executions>
             </plugin>
