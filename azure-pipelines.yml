@@ -10,7 +10,13 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+  - task: DockerCompose@0
+    displayName: "Run a database"
+    inputs:
+      dockerComposeFile: "docker-compose.yml"
+      dockerComposeCommand: "up --abort-on-container-exit"
   - task: Maven@3
+    displayName: "Running package"
     inputs:
       mavenPomFile: 'pom.xml'
       mavenOptions: '-Xmx3072m'
@@ -18,4 +24,4 @@ steps:
       jdkVersionOption: '1.8'
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
-      goals: 'verify'
+      goals: 'package'
