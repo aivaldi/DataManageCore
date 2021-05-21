@@ -141,6 +141,13 @@
                 <configuration>
                     <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
                     <skipTests>${ignore-test}</skipTests>
+                    <includes>
+                        <include>**/*Suite.class</include>
+                        <include>**/*Test.class</include>
+                        <include>**/*Tests.class</include>
+                        <include>**/*CleanSpec.class</include>
+                        <include>**/*Specs.class</include>
+                    </includes>
                 </configuration>
             </plugin>
 
