@@ -55,13 +55,13 @@
                         <image>
                             <alias>database</alias>
                             <name>mysql:latest</name>
+
                             <run>
                                 <volumes>
                                     <bind>
                                         <volume>${mysql-test-script-directory}:/docker-entrypoint-initdb.d</volume>
                                     </bind>
                                 </volumes>
-
                                 <wait>
                                     <log>mysqld: ready for connections</log>
                                     <time>20000</time>
@@ -138,7 +138,7 @@
                                 <include>**/*Suite.class</include>
                                 <include>**/*Test.class</include>
                                 <include>**/*Tests.class</include>
-                                <include>**/*Spec.class</include>
+                                <include>**/*CleanSpec.class</include>
                                 <include>**/*Specs.class</include>
                             </includes>
                         </configuration>
