@@ -10,19 +10,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - task: DockerCompose@0
-    displayName: "Run a database"
-    inputs:
-      dockerComposeFile: "docker-compose.yml"
-      dockerComposeCommand: "up --abort-on-container-exit"
-      detached: true
-      qualifyImageNames: true
-      serviceName: mysql
   - task: Maven@3
     displayName: "Running package"
     env:
-      IGNORE-IT: "true"
-      IGNORE-TEST: "false"
+      IGNORE-IT: "false"
+      IGNORE-TEST: "true"
     inputs:
       mavenPomFile: 'pom.xml'
       mavenOptions: '-Xmx3072m'
