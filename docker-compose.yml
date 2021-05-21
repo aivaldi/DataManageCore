@@ -11,4 +11,3 @@ services:
       MYSQL_PASSWORD: mysql
     volumes:
       - ./src/tests/resources/docker/mysql:/docker-entrypoint-initdb.d
-    
