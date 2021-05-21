@@ -13,8 +13,6 @@
 
     <properties>
         <mysql-test-script-directory>${project.basedir}/src/tests/resources/docker/mysql</mysql-test-script-directory>
-        <ignore-integration-test>false</ignore-integration-test>
-        <ignore-test>true</ignore-test>
     </properties>
 
     <build>
@@ -46,30 +44,70 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- configure docker for integration test-->
             <plugin>
-                <groupId>io.brachu</groupId>
-                <artifactId>docker-compose-maven-plugin</artifactId>
-                <version>0.9.0</version>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.35.0</version>
+
                 <configuration>
-                    <projectName>DMC</projectName>
-                    <file>docker-compose.yml</file>
-                    <wait>
-                        <value>30</value>
-                        <unit>SECONDS</unit>
-                    </wait>
-                    <startServices>
-                        <service>mysql</service>
-                    </startServices>
+                    <images>
+                        <image>
+                            <alias>database</alias>
+                            <name>mysql:latest</name>
+
+                            <run>
+                                <volumes>
+                                    <bind>
+                                        <volume>${mysql-test-script-directory}:/docker-entrypoint-initdb.d</volume>
+                                    </bind>
+                                </volumes>
+                                <wait>
+                                    <log>mysqld: ready for connections</log>
+                                    <time>20000</time>
+                                </wait>
+                                <env>
+                                    <MYSQL_ROOT_PASSWORD>abc123</MYSQL_ROOT_PASSWORD>
+                                    <MYSQL_DATABASE>testdb</MYSQL_DATABASE>
+                                    <MYSQL_USER>mysql</MYSQL_USER>
+                                    <MYSQL_PASSWORD>mysql</MYSQL_PASSWORD>
+                                </env>
+                                <ports>
+                                    <port>3306:3306</port>
+                                </ports>
+
+
+                                <log>
+                                    <prefix>TC</prefix>
+                                    <date>default</date>
+                                    <color>cyan</color>
+                                </log>
+                            </run>
+                        </image>
+                    </images>
                 </configuration>
+
                 <executions>
                     <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>up</goal>
-                            <goal>down</goal>
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                            <goal>remove</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -77,14 +115,7 @@
                 <version>2.20</version>
                 <configuration>
                     <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
-                    <skipTests>${ignore-test}</skipTests>
-                    <includes>
-                        <include>**/*Suite.class</include>
-                        <include>**/*Test.class</include>
-                        <include>**/*Tests.class</include>
-                        <include>**/*class</include>
-                        <include>**/*Specs.class</include>
-                    </includes>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
 
@@ -100,7 +131,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <skipTests>${ignore-integration-test}</skipTests>
+                            <skipTests>false</skipTests>
                             <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
                             <includes>
                                 <include>**/*Suite.class</include>
@@ -113,6 +144,49 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.3</version>
+                <executions>
+                    <execution>
+                        <id>coverage-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>coverage-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <!-- Threshold -->
+                    <execution>
+                        <id>coverage-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>CLASS</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>80%</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
 
         </plugins>
 
