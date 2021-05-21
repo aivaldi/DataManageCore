@@ -34,7 +34,7 @@ steps:
       jdkVersionOption: '1.8'
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
-      goals: 'package'
+      goals: 'verify'
   
   - task: Maven@3
     condition: startsWith(variables['Build.SourceBranchName'], 'release')
