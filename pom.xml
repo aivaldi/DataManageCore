@@ -13,8 +13,8 @@
 
     <properties>
         <mysql-test-script-directory>${project.basedir}/src/tests/resources/docker/mysql</mysql-test-script-directory>
-        <ignore-integration-test>${env.IGNORE-IT}</ignore-integration-test>
-        <ignore-test>${env.IGNORE-TEST}</ignore-test>
+        <ignore-integration-test>false</ignore-integration-test>
+        <ignore-test>true</ignore-test>
     </properties>
 
     <build>
@@ -120,9 +120,9 @@
                         <value>30</value>
                         <unit>SECONDS</unit>
                     </wait>
-                    <services>
+                    <startServices>
                         <service>mysql</service>
-                    </services>
+                    </startServices>
                 </configuration>
                 <executions>
                     <execution>
