@@ -46,69 +46,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- configure docker for integration test-->
-            <!-- plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.35.0</version>
-
-                <configuration>
-                    <images>
-                        <image>
-                            <alias>database</alias>
-                            <name>mysql:latest</name>
-
-                            <run>
-                                <volumes>
-                                    <bind>
-                                        <volume>${mysql-test-script-directory}:/docker-entrypoint-initdb.d</volume>
-                                    </bind>
-                                </volumes>
-                                <wait>
-                                    <log>mysqld: ready for connections</log>
-                                    <time>20000</time>
-                                </wait>
-                                <env>
-                                    <MYSQL_ROOT_PASSWORD>abc123</MYSQL_ROOT_PASSWORD>
-                                    <MYSQL_DATABASE>testdb</MYSQL_DATABASE>
-                                    <MYSQL_USER>mysql</MYSQL_USER>
-                                    <MYSQL_PASSWORD>mysql</MYSQL_PASSWORD>
-                                </env>
-                                <ports>
-                                    <port>3306:3306</port>
-                                </ports>
-
-
-                                <log>
-                                    <prefix>TC</prefix>
-                                    <date>default</date>
-                                    <color>cyan</color>
-                                </log>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                            <goal>remove</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin -->
-
             <plugin>
                 <groupId>io.brachu</groupId>
                 <artifactId>docker-compose-maven-plugin</artifactId>
@@ -145,7 +82,7 @@
                         <include>**/*Suite.class</include>
                         <include>**/*Test.class</include>
                         <include>**/*Tests.class</include>
-                        <include>**/*CleanSpec.class</include>
+                        <include>**/*class</include>
                         <include>**/*Specs.class</include>
                     </includes>
                 </configuration>
@@ -169,7 +106,7 @@
                                 <include>**/*Suite.class</include>
                                 <include>**/*Test.class</include>
                                 <include>**/*Tests.class</include>
-                                <include>**/*CleanSpec.class</include>
+                                <include>**/*class</include>
                                 <include>**/*Specs.class</include>
                             </includes>
                         </configuration>
