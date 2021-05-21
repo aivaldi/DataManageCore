@@ -11,8 +11,4 @@ services:
       MYSQL_PASSWORD: mysql
     volumes:
       - ./src/tests/resources/docker/mysql:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: mysql -pabc123 -D testdb -e "SELECT * FROM test1;"
-      interval: 3s
-      timeout: 60s
-      retries: 10
+    
