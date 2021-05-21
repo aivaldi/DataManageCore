@@ -19,7 +19,7 @@ abstract class GeneralSpec extends Specification{
   def getTestDb2TableConnection () = {
     new SQLParams(
       "my_sql",
-      "localhost",
+      "127.0.0.1",
       "testdb",
       "test2",
       "root",
@@ -28,7 +28,7 @@ abstract class GeneralSpec extends Specification{
   def getTestDb1TableConnection () = {
     new SQLParams(
       "my_sql",
-      "localhost",
+      "127.0.0.1",
       "testdb",
       "test1",
       "root",
@@ -37,7 +37,7 @@ abstract class GeneralSpec extends Specification{
   def getTestDb3TableConnection () = {
     new SQLParams(
       "my_sql",
-      "localhost",
+      "127.0.0.1",
       "testdb",
       "test3",
       "root",
