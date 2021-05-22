@@ -5,6 +5,7 @@
 
 trigger:
   - develop
+  - releases/*
 
 pool:
   vmImage: ubuntu-latest
@@ -22,7 +23,7 @@ steps:
       goals: 'verify'
   
   - task: Maven@3
-    condition: startsWith(variables['Build.SourceBranchName'], 'release')
+    condition: startsWith(variables['Build.SourceBranchName'], 'releases')
     inputs:
       mavenPomFile: 'pom.xml'
       mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
