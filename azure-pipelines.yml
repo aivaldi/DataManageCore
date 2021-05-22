@@ -12,6 +12,7 @@ pool:
 
 steps:
   - task: Maven@3
+    condition: not(startsWith(variables['Build.SourceBranch'], 'releases'))
     displayName: "Running package"
     inputs:
       mavenPomFile: 'pom.xml'
@@ -23,7 +24,8 @@ steps:
       goals: 'verify'
   
   - task: Maven@3
-    condition: startsWith(variables['Build.SourceBranchName'], 'releases')
+    condition: startsWith(variables['Build.SourceBranch'], 'releases')
+    displayName: "Release"
     inputs:
       mavenPomFile: 'pom.xml'
       mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
