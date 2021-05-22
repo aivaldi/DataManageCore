@@ -261,5 +261,22 @@
             <url>http://dl.bintray.com/scalaz/releases/</url>
             <layout>default</layout>
         </repository>
+        <repository>
+            <id>iaivaldi</id>
+            <url>https://pkgs.dev.azure.com/iaivaldi/DataManage/_packaging/ProcessManager/maven/v1</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
+    <distributionManagement>
+        <repository>
+            <id>iaivaldi</id>
+            <url>https://pkgs.dev.azure.com/iaivaldi/DataManage/_packaging/ProcessManager/maven/v1</url>
+        </repository>
+    </distributionManagement>
+
 </project>
