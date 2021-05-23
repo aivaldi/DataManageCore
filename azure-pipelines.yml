@@ -11,7 +11,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-
+  - script: echo $(Build.BuildNumber)
   - task: MavenAuthenticate@0
     displayName: 'Maven Authenticate'
     inputs:
