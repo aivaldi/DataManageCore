@@ -24,7 +24,7 @@ steps:
       goals: 'verify'
   
   - task: Maven@3
-    condition: startsWith(contains['Build.SourceBranch'], 'releases')
+    condition: contains(variables['Build.SourceBranch'], 'releases')
     displayName: "Release"
     inputs:
       mavenPomFile: 'pom.xml'
