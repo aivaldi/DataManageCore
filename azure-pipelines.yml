@@ -11,11 +11,26 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+
+  - task: MavenAuthenticate@0
+    displayName: 'Maven Authenticate'
+    inputs:
+      artifactsFeeds: ProcessManager
+  - task: Cache@2
+    inputs:
+      key: 'maven | "$(Agent.OS)" | **/pom.xml'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+        maven
+      path: $(MAVEN_CACHE_FOLDER)
+    displayName: Cache Maven local repo
+
   - task: Maven@3
+    condition: not(contains(variables['Build.SourceBranch'], 'releases'))
     displayName: "Running package"
     inputs:
       mavenPomFile: 'pom.xml'
-      mavenOptions: '-Xmx3072m '
+      mavenOptions: '-Xmx3072m'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.8'
       jdkArchitectureOption: 'x64'
@@ -23,10 +38,11 @@ steps:
       goals: 'verify'
   
   - task: Maven@3
-    condition: startsWith(variables['Build.SourceBranchName'], 'releases')
+    condition: contains(variables['Build.SourceBranch'], 'releases')
+    displayName: "Release"
     inputs:
       mavenPomFile: 'pom.xml'
-      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+      mavenOptions: '-Xmx3072m'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.8'
       jdkArchitectureOption: 'x64'
