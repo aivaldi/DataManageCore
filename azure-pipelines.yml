@@ -16,15 +16,6 @@ steps:
     displayName: 'Maven Authenticate'
     inputs:
       artifactsFeeds: iaivaldi
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | **/pom.xml'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-      path: $(MAVEN_CACHE_FOLDER)
-    displayName: Cache Maven local repo
-
   - task: Maven@3
     condition: not(contains(variables['Build.SourceBranch'], 'releases'))
     displayName: "Running package"
@@ -40,6 +31,8 @@ steps:
   - task: Maven@3
     condition: contains(variables['Build.SourceBranch'], 'releases')
     displayName: "Release"
+    env:
+      BUILD_VALUE: $(Build.BuildNumber)
     inputs:
       mavenPomFile: 'pom.xml'
       mavenOptions: '-Xmx3072m'
