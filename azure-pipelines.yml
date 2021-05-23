@@ -3,6 +3,11 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
+
+variables:
+ MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+ MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
 trigger:
   - develop
   - releases/*
@@ -11,12 +16,26 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+
+  - task: MavenAuthenticate@0
+    displayName: 'Maven Authenticate'
+    inputs:
+      artifactsFeeds: iaivaldi
+  - task: Cache@2
+    inputs:
+      key: 'maven | "$(Agent.OS)" | **/pom.xml'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+        maven
+      path: $(MAVEN_CACHE_FOLDER)
+    displayName: Cache Maven local repo
+
   - task: Maven@3
     condition: not(contains(variables['Build.SourceBranch'], 'releases'))
     displayName: "Running package"
     inputs:
       mavenPomFile: 'pom.xml'
-      mavenOptions: '-Xmx3072m '
+      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.8'
       jdkArchitectureOption: 'x64'
@@ -28,7 +47,7 @@ steps:
     displayName: "Release"
     inputs:
       mavenPomFile: 'pom.xml'
-      mavenOptions: '-Xmx3072m'
+      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.8'
       jdkArchitectureOption: 'x64'
