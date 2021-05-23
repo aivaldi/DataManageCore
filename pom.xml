@@ -5,7 +5,7 @@
     <artifactId>etl_core</artifactId>
     <packaging>jar</packaging>
     <description>ETLCore</description>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.${env.BUILD_VALUE}</version>
     <name>ETLCore</name>
     <organization>
         <name>ar.com.ivalsoft</name>
