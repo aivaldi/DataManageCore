@@ -278,6 +278,4 @@
             <url>https://pkgs.dev.azure.com/iaivaldi/DataManage/_packaging/ProcessManager/maven/v1</url>
         </repository>
     </distributionManagement>
-
-
 </project>
