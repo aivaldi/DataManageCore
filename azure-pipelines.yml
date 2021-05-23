@@ -20,7 +20,7 @@ steps:
   - task: MavenAuthenticate@0
     displayName: 'Maven Authenticate'
     inputs:
-      artifactsFeeds: iaivaldi
+      artifactsFeeds: ProcessManager
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | **/pom.xml'
